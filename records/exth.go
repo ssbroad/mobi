@@ -5,7 +5,7 @@ import (
 	"io"
 
 	"github.com/ssbroad/mobi/pdb"
-	"github.com/ssbroad/mobi/types"
+	t "github.com/ssbroad/mobi/types"
 )
 
 type EXTHSection struct {
