@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"text/template"
 
-	r "github.com/leotaku/mobi/records"
+	r "github.com/ssbroad/mobi/records"
 )
 
 const defaultTemplateString = `<?xml version="1.0" encoding="UTF-8"?>
