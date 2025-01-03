@@ -3,8 +3,8 @@ package records
 import (
 	"fmt"
 
-	"github.com/leotaku/mobi/pdb"
-	t "github.com/leotaku/mobi/types"
+	"github.com/ssbroad/mobi/pdb"
+	t "github.com/ssbroad/mobi/types"
 )
 
 func NCXHeaderIndexRecord(entryCount int) IndexRecord {
