@@ -7,10 +7,11 @@ import (
 	"strings"
 	"text/template"
 	"time"
-    //"bytes"
-	"github.com/leotaku/mobi/pdb"
-	r "github.com/leotaku/mobi/records"
-	t "github.com/leotaku/mobi/types"
+
+	//"bytes"
+	"github.com/ssbroad/mobi/pdb"
+	r "github.com/ssbroad/mobi/records"
+	t "github.com/ssbroad/mobi/types"
 	"golang.org/x/text/language"
 )
 
@@ -32,18 +33,18 @@ type Book struct {
 	DocType       string
 	Language      language.Tag
 	FixedLayout   bool
-	RightToLeft   bool	
+	RightToLeft   bool
 	//SavePng       bool
 	//JpgQuality    int
-	Chapters      []Chapter
-	CSSFlows      []string
+	Chapters []Chapter
+	CSSFlows []string
 	//Images        []image.Image
 	//CoverImage    image.Image
 	//ThumbImage    image.Image
-	Images        [][]byte
-	CoverImage    []byte
-	ThumbImage    []byte	
-	UniqueID      uint32
+	Images     [][]byte
+	CoverImage []byte
+	ThumbImage []byte
+	UniqueID   uint32
 
 	// hidden
 	tpl *template.Template
@@ -154,6 +155,24 @@ func (m Book) Realize() pdb.Database {
 
 	// Image records
 	/*
+		images := m.Images
+		if m.CoverImage != nil {
+			images = append(images, m.CoverImage)
+		}
+		if m.ThumbImage != nil {
+			images = append(images, m.ThumbImage)
+		}
+		if len(images) > 0 {
+			null.MOBIHeader.FirstImageIndex = uint32(db.Idx() + 1)
+			null.EXTHSection.AddInt(t.EXTHKF8CountResources, len(images))
+		}
+		for _, img := range images {
+			rec := r.NewImageRecord(img)
+			db.AddRecord(rec)
+		}
+	*/
+
+	// 合并图像列表（封面可能已在主逻辑中单独添加）
 	images := m.Images
 	if m.CoverImage != nil {
 		images = append(images, m.CoverImage)
@@ -165,29 +184,11 @@ func (m Book) Realize() pdb.Database {
 		null.MOBIHeader.FirstImageIndex = uint32(db.Idx() + 1)
 		null.EXTHSection.AddInt(t.EXTHKF8CountResources, len(images))
 	}
-	for _, img := range images {
-		rec := r.NewImageRecord(img)
+	// 直接写入 PNG 字节数据
+	for _, pngData := range images {
+		rec := r.NewBlobRecord(pngData) // 新建一个直接存储字节数据的 Record
 		db.AddRecord(rec)
 	}
-	*/
-	
-    // 合并图像列表（封面可能已在主逻辑中单独添加）
-    images := m.Images
-	if m.CoverImage != nil {
-		images = append(images, m.CoverImage)
-	}
-	if m.ThumbImage != nil {
-		images = append(images, m.ThumbImage)
-	}
-	if len(images) > 0 {
-		null.MOBIHeader.FirstImageIndex = uint32(db.Idx() + 1)
-		null.EXTHSection.AddInt(t.EXTHKF8CountResources, len(images))
-	}
-    // 直接写入 PNG 字节数据
-    for _, pngData := range images {
-        rec := r.NewBlobRecord(pngData) // 新建一个直接存储字节数据的 Record
-        db.AddRecord(rec)
-    }	
 
 	// FDST Record
 	flows := append([]string{html}, m.CSSFlows...)
